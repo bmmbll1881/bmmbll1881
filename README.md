@@ -1,25 +1,23 @@
-# Leo · Agent / RAG 应用开发
+# Leo | Agent and RAG Application Development
 
-用 Python、FastAPI 和 LangGraph 开发有状态的 Agent，以及能回查原文的文档问答服务。
+I build stateful agents and document QA services with Python, FastAPI, and LangGraph. My projects focus on recovering from tool failures and tracing answers back to source evidence.
 
-[查看场景与验收样例](https://bmmbll1881.github.io/agent-rag-demo/) · 页面展示固定样例，后端验证在本地运行。
+### LocalLife | Local Dining Assistant
 
-### LocalLife · 本地生活决策 Agent
+LocalLife helps two diners compare options and revise their per-person budget in the same conversation. When the budget drops from CNY 100 to CNY 50, it keeps the party size, removes over-budget recommendations, and flags places with missing prices.
 
-在同一会话里把两人用餐的人均预算从 100 元调到 50 元。系统保留人数，移除超预算推荐，并标出缺价商铺。
+- A LangGraph Supervisor coordinates venue search, review evidence, discount estimates, and result validation.
+- HTTP fault-injection tests verified that invalid planner output and planner errors fall back to the deterministic workflow. The business results match the baseline, and the turn is stored once.
 
-- 用 LangGraph Supervisor 编排商铺检索、口碑取证、优惠试算和结果校验。
-- 通过 HTTP 注入两类规划器故障。回退后的业务结果与基线一致，会话轮次只写入一次。
+[View the budget and planner fallback examples](https://bmmbll1881.github.io/agent-rag-demo/#locallife)
 
-[查看预算调整与故障回退](https://bmmbll1881.github.io/agent-rag-demo/#locallife)
+### Youju | Traceable Document QA
 
-### 有据 Youju · 可核查文档问答
+Youju answers questions about policies, business reports, and contracts. Each answer includes source excerpts and their locations. A run ID lets callers retrieve the original answer and evidence.
 
-对制度或经营简报提问，回答附原文与位置，并可通过 `run_id` 回查当次答案和证据。
+- Hybrid retrieval combines pgvector and Chinese BM25. The service validates citations, numbers, and units before returning the answer.
+- Local end-to-end tests verified citation lookup and confirmed that the previous document version still answers uncached questions after a failed index update.
 
-- 使用 pgvector 与中文 BM25 混合检索，在生成后校验引用、数值和单位。
-- 本地端到端验证覆盖引用回查，以及文档更新失败后旧版本仍能回答未缓存的问题。
+[View the citation and index recovery examples](https://bmmbll1881.github.io/agent-rag-demo/#youju)
 
-[查看引用与文档更新故障](https://bmmbll1881.github.io/agent-rag-demo/#youju)
-
-LocalLife 通过 MCP 向 Youju 查询文档证据，并回查问答运行记录。
+LocalLife uses MCP to query Youju and retrieve the corresponding run records. The public site shows recorded scenarios. Backend execution has been verified locally.
